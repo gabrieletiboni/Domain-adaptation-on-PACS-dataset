@@ -99,26 +99,26 @@ class AlexNetDANN(nn.Module):
 	        domain_output = self.domain_classifier(reverse_feature)
         """
 
-        x = self.features(x)
-        x = self.avgpool(x)
-        features = torch.flatten(x, 1)
+		x = self.features(x)
+		x = self.avgpool(x)
+		features = torch.flatten(x, 1)
 
-        if dest == 'classifier':
-        	output = self.classifier(features)
-        	return output
+		if dest == 'classifier':
+			output = self.classifier(features)
+			return output
 
-        elif dest == 'domain_classifier':
-        	if alpha == None:
-        		print('FATAL ERROR - Attach a valid alpha when forwarding to the domain classifier')
-        		sys.exit()
-        		
-        	reverse_features = ReverseLayerF.apply(features, alpha)
-        	domain_output = self.domain_classifier(reverse_features)
-        	return domain_output
+		elif dest == 'domain_classifier':
+			if alpha == None:
+				print('FATAL ERROR - Attach a valid alpha when forwarding to the domain classifier')
+				sys.exit()
+				
+			reverse_features = ReverseLayerF.apply(features, alpha)
+			domain_output = self.domain_classifier(reverse_features)
+			return domain_output
 
-        else:
-        	print('FATAL ERROR - Invalid parameters to forward function in AlexNetDANN')
-        	sys.exit()
+		else:
+			print('FATAL ERROR - Invalid parameters to forward function in AlexNetDANN')
+			sys.exit()
 
 def alexnetDANN(pretrained=True, progress=True, **kwargs):
     """
