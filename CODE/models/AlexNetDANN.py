@@ -1,12 +1,27 @@
 import torch
 import torch.nn as nn
 
-# from .utils import load_state_dict_from_url
 from torch.hub import load_state_dict_from_url
 
 model_urls = {
     'alexnet': 'https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth',
 }
+
+class ReverseLayerF(Function):
+    # Forwards identity
+    # Sends backward reversed gradients
+
+    @staticmethod
+    def forward(ctx, x, alpha):
+        ctx.alpha = alpha
+
+        return x.view_as(x)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        output = grad_output.neg() * ctx.alpha
+
+        return output, None
 
 class AlexNetDANN(nn.Module):
 
@@ -52,16 +67,58 @@ class AlexNetDANN(nn.Module):
 		
 
 	# DEFINE HOW FORWARD PASS IS COMPUTED
-	def forward(self, x):
-		x = self.features(x)
-		x = self.avgpool(x)
-		x = torch.flatten(x, 1)
-		x = self.classifier(x)
+	def forward(self, x, alpha=None, dest='classifier'):
+		"""
+		# PYTORCH ALEXNET IMPLEMENTATION
+			x = self.features(x)
+			x = self.avgpool(x)
+			x = torch.flatten(x, 1)
+			x = self.classifier(x)
+		"""
 
-		# x = self.features(x)
-		# x = self.avgpool(x)
+		"""
+		# HW3 SUGGESTION OF IMPLEMENTATION
+			features = self.features
+	        features = features.view(features.size(0), -1)
+	        if alpha is not None:
+		        reverse_feature = ReverseLayerF.apply(features, alpha)
+		        discriminator_output = ...
+		        return discriminator_output
+	        else:
+	            class_outputs = ...
+	            return class_outputs
+		"""
 
-		return x
+		"""
+		# PYTORCH DANN IMPLEMENTATION		
+			input_data = input_data.expand(input_data.data.shape[0], 3, 28, 28)
+	        feature = self.feature(input_data)
+	        feature = feature.view(-1, 50 * 4 * 4)
+	        reverse_feature = ReverseLayerF.apply(feature, alpha)
+	        class_output = self.class_classifier(feature)
+	        domain_output = self.domain_classifier(reverse_feature)
+        """
+
+        x = self.features(x)
+        x = self.avgpool(x)
+        features = torch.flatten(x, 1)
+
+        if dest == 'classifier':
+        	output = self.classifier(features)
+        	return output
+
+        elif dest == 'domain_classifier':
+        	if alpha == None:
+        		print('FATAL ERROR - Attach a valid alpha when forwarding to the domain classifier')
+        		sys.exit()
+        		
+        	reverse_features = ReverseLayerF.apply(features, alpha)
+        	domain_output = self.domain_classifier(reverse_features)
+        	return domain_output
+
+        else:
+        	print('FATAL ERROR - Invalid parameters to forward function in AlexNetDANN')
+        	sys.exit()
 
 def alexnetDANN(pretrained=True, progress=True, **kwargs):
     """
