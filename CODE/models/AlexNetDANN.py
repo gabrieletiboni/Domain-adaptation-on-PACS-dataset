@@ -10,7 +10,7 @@ model_urls = {
 
 class AlexNetDANN(nn.Module):
 
-	def __init__(self, num_classes=7):
+	def __init__(self, num_classes=1000):
 		super(AlexNetDANN, self).__init__()
 
 		self.features = nn.Sequential(
@@ -77,7 +77,18 @@ def alexnetDANN(pretrained=True, progress=True, **kwargs):
                                               progress=progress)
         model.load_state_dict(state_dict, strict=False)
 	
+	# Change output classes
     model.classifier[6] = nn.Linear(4096, 7)
     model.domain_classifier[6] = nn.Linear(4096, 7)
+
+    # Copy pretrained weights from the classifier to the domain_classifier
+    model.domain_classifier[1].weight.data = model.classifier[1].weight.data.clone()
+    model.domain_classifier[1].bias.data = model.classifier[1].bias.data.clone()
+
+    model.domain_classifier[4].weight.data = model.classifier[4].weight.data.clone()
+    model.domain_classifier[4].bias.data = model.classifier[4].bias.data.clone()
+
+    model.domain_classifier[6].weight.data = model.classifier[6].weight.data.clone()
+    model.domain_classifier[6].bias.data = model.classifier[6].bias.data.clone()
 
     return model
