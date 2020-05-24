@@ -63,7 +63,7 @@ class AlexNetDANN(nn.Module):
 			nn.Dropout(),
 			nn.Linear(4096, 4096),
 			nn.ReLU(inplace=True),
-			nn.Linear(4096, num_classes),
+			nn.Linear(4096, 2),
 		)
 		
 
@@ -135,7 +135,7 @@ def alexnetDANN(pretrained=True, progress=True, **kwargs):
 	
 	# Change output classes
     model.classifier[6] = nn.Linear(4096, 7)
-    model.domain_classifier[6] = nn.Linear(4096, 7)
+    model.domain_classifier[6] = nn.Linear(4096, 2)
 
     # Copy pretrained weights from the classifier to the domain_classifier
     model.domain_classifier[1].weight.data = model.classifier[1].weight.data.clone()
@@ -143,8 +143,5 @@ def alexnetDANN(pretrained=True, progress=True, **kwargs):
 
     model.domain_classifier[4].weight.data = model.classifier[4].weight.data.clone()
     model.domain_classifier[4].bias.data = model.classifier[4].bias.data.clone()
-
-    model.domain_classifier[6].weight.data = model.classifier[6].weight.data.clone()
-    model.domain_classifier[6].bias.data = model.classifier[6].bias.data.clone()
 
     return model
