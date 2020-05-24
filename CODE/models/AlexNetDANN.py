@@ -1,10 +1,16 @@
+import torch
 import torch.nn as nn
 
+# from .utils import load_state_dict_from_url
+from torch.hub import load_state_dict_from_url
 
+model_urls = {
+    'alexnet': 'https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth',
+}
 
 class AlexNetDANN(nn.Module):
 
-	def __init__(self):
+	def __init__(self, num_classes=7):
 		super(AlexNetDANN, self).__init__()
 
 		self.features = nn.Sequential(
@@ -33,6 +39,16 @@ class AlexNetDANN(nn.Module):
 			nn.ReLU(inplace=True),
 			nn.Linear(4096, num_classes),
 		)
+
+		self.domain_classifier = nn.Sequential(
+			nn.Dropout(),
+			nn.Linear(256 * 6 * 6, 4096),
+			nn.ReLU(inplace=True),
+			nn.Dropout(),
+			nn.Linear(4096, 4096),
+			nn.ReLU(inplace=True),
+			nn.Linear(4096, num_classes),
+		)
 		
 
 	# DEFINE HOW FORWARD PASS IS COMPUTED
@@ -41,4 +57,23 @@ class AlexNetDANN(nn.Module):
 		x = self.avgpool(x)
 		x = torch.flatten(x, 1)
 		x = self.classifier(x)
+
+		# x = self.features(x)
+		# x = self.avgpool(x)
+
+		print('forward')
+
 		return x
+
+def alexnetDANN(pretrained=True, progress=True, **kwargs):
+    """
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+        progress (bool): If True, displays a progress bar of the download to stderr
+    """
+    model = AlexNetDANN(**kwargs)
+    if pretrained:
+        state_dict = load_state_dict_from_url(model_urls['alexnet'],
+                                              progress=progress)
+        model.load_state_dict(state_dict, strict=False)
+    return model
