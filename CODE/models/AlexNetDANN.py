@@ -71,9 +71,13 @@ def alexnetDANN(pretrained=True, progress=True, **kwargs):
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    model = AlexNetDANN(**kwargs)
+    model = AlexNetDANN(num_classes=1000, **kwargs)
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls['alexnet'],
                                               progress=progress)
         model.load_state_dict(state_dict, strict=False)
+	
+    model.classifier[6] = nn.Linear(4096, 7)
+    model.domain_classifier[6] = nn.Linear(4096, 7)
+
     return model
