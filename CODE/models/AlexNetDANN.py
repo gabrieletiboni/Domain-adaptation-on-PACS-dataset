@@ -61,8 +61,6 @@ class AlexNetDANN(nn.Module):
 		# x = self.features(x)
 		# x = self.avgpool(x)
 
-		print('forward')
-
 		return x
 
 def alexnetDANN(pretrained=True, progress=True, **kwargs):
