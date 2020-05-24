@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch.autograd import Function
 
 from torch.hub import load_state_dict_from_url
 
@@ -111,7 +112,7 @@ class AlexNetDANN(nn.Module):
 			if alpha == None:
 				print('FATAL ERROR - Attach a valid alpha when forwarding to the domain classifier')
 				sys.exit()
-				
+
 			reverse_features = ReverseLayerF.apply(features, alpha)
 			domain_output = self.domain_classifier(reverse_features)
 			return domain_output
