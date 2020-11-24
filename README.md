@@ -1,4 +1,4 @@
-# DANN-on-PACS-dataset
+# Domain adaptation on PACS dataset
 Implementation of DANN, a Domain Adaptation algorithm, on the PACS dataset using AlexNet.
 
 Useful resources:
