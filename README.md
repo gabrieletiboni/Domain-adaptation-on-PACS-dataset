@@ -1,7 +1,7 @@
 # Domain adaptation on PACS dataset
 Implementation of DANN, a Domain Adaptation algorithm, on the PACS dataset using AlexNet.
 
-For all the details on DANN implementation and the results obtaned (see the final report)[]
+For all the details on DANN implementation and the results obtained (see the final report)[https://github.com/gabrieletiboni/Domain-adaptation-on-PACS-dataset/blob/master/Report.pdf]
 
 Useful resources:
 - [Main code](https://colab.research.google.com/drive/1nou9FJEert__u34jdXc9Yl0rGm82aBJO?usp=sharing "Google Colab Notebook")
